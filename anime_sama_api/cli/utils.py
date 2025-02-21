@@ -1,6 +1,6 @@
 import sys
 from collections.abc import Callable
-from typing import TypeVar
+from typing import List, TypeVar
 
 from rich import print
 
@@ -45,30 +45,34 @@ def select_one(choices: list[T], msg="Choose a number", **_) -> T:
     return safe_input(f"{msg}: \033[0;34m", lambda string: choices[int(string) - 1])
 
 
-def select_range(choices: list[T], msg="Choose a range", print_choices=True) -> list[T]:
-    print_selection(choices, print_choices)
+def select_range(choices: List[T], msg: str = "Choose a range", print_choices: bool = True) -> List[T]:
+    if print_choices:
+        for i, choice in enumerate(choices, 1):
+            print(f"{i}. {choice}")
 
-    if len(choices) == 1:
-        return [choices[0]]
+    print(f"\n{msg}")
+    selection = input("Enter your choice(s), separated by commas (or '*' to select all): ")
 
-    def transform(string: str) -> list[T]:
-        ints_set = set()
-        for args in string.split(","):
-            ints = [int(num) for num in args.split("-")]
+    # If user write '*', select all choices
+    if selection.strip() == "*":
+        return choices  # Return the entire list
 
-            if len(ints) == 1:
-                ints_set.add(ints[0])
-            elif len(ints) == 2:
-                ints_set.update(range(ints[0], ints[1] + 1))
+    # Otherwise, we assume the user enters indices separated by hyphens
+    selected_indices = []
+    for item in selection.split("-"):
+        item = item.strip()
+        if item.isdigit():
+            index = int(item) - 1  # Convertir en index 0-basé
+            if 0 <= index < len(choices):
+                selected_indices.append(index)
             else:
-                raise ValueError
+                print(f"Invalid index: {item}")
+        else:
+            print(f"Invalid input: {item}")
 
-        return [choices[i - 1] for i in ints_set]
+    # Returns the selected items
+    return [choices[i] for i in selected_indices]
 
-    return safe_input(
-        f"{msg} [green][1-{len(choices)}]:[/] \033[0;34m",
-        transform,
-    )
 
 
 def keyboard_inter():

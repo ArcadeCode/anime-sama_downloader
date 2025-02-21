@@ -1,5 +1,22 @@
 from pathlib import Path
-from .defautl_config import *
+from .default_config import *
+from ..langs import LANG
 
-# Make your overwrites here
-# See defautl_config.py for default values
+PREFER_LANGUAGES: list[LANG] = ["VF", "VO"]
+INTERNAL_PLAYER_COMMAND = "mpv".split()
+DOWNLOAD_PATH = Path("~/Downloads/Anime-Sama/le-monde-incroyable-de-gumball")
+DOWNLOAD = True
+
+URL = "https://anime-sama.fr/"
+
+# fmt: off
+PLAYERS = {
+    "prefer": [],
+    "ban": ["anime-sama"]
+}
+
+# fmt: off
+CONCURRENT_DOWNLOADS = {
+    "fragment": 3,
+    "video": 5
+}
